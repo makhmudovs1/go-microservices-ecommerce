@@ -1,0 +1,13 @@
+CREATE TABLE cart (
+    id         BIGSERIAL PRIMARY KEY,
+    user_id    VARCHAR(64) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE cart_item (
+    id BIGSERIAL PRIMARY KEY,
+    cart_id BIGINT REFERENCES cart(id) ON DELETE CASCADE,
+    sku VARCHAR(64) NOT NULL,
+    qty INTEGER NOT NULL CHECK (qty > 0)
+);
