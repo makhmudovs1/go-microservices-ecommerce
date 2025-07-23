@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/service"
+	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/models"
 )
 
 type CartRepository struct {
@@ -45,29 +45,29 @@ func (r *CartRepository) AddItemToCart(ctx context.Context, userID, sku string, 
 
 // GetCartByUserId
 
-func (r *CartRepository) GetCartByUserID(ctx context.Context, userID string) (service.Cart, error) {
+func (r *CartRepository) GetCartByUserID(ctx context.Context, userID string) (models.Cart, error) {
 	var cartID int64
-	cart := service.Cart{
+	cart := models.Cart{
 		UserId: userID,
-		Items:  []service.CartItem{},
+		Items:  []models.CartItem{},
 	}
 	err := r.db.QueryRow(ctx, "SELECT id FROM cart WHERE user_id = $1", userID).Scan(&cartID)
 	if err == pgx.ErrNoRows {
-		return service.Cart{}, err
+		return models.Cart{}, err
 	}
 	rows, err := r.db.Query(ctx,
 		"SELECT sku, qty FROM cart_item WHERE cart_id = $1", cartID)
 	defer rows.Close()
 	for rows.Next() {
-		var item service.CartItem
+		var item models.CartItem
 		err = rows.Scan(&item.SKU, &item.Qty)
 		if err != nil {
-			return service.Cart{}, err
+			return models.Cart{}, err
 		}
 		cart.Items = append(cart.Items, item)
 	}
 	if err := rows.Err(); err != nil {
-		return service.Cart{}, err
+		return models.Cart{}, err
 	}
 	return cart, err
 }

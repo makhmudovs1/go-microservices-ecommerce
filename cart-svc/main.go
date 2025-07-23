@@ -13,10 +13,10 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	if err := repository.InitPostgres(ctx); err != nil {
-		log.Fatalf("failed to connect to DB: %v", err)
+		log.Fatal("Failed to connect to postgres:", err)
 	}
 	// creating http.Server with any dependencies
-	srv := server.New()
+	srv := server.New() // TODO
 
 	go func() {
 		if err := srv.Run(); err != nil {
