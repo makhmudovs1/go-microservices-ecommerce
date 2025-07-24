@@ -7,19 +7,24 @@ import (
 	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/models"
 )
 
-type CartRepository struct {
+type CartRepository interface {
+	AddItemToCart(ctx context.Context, userID, sku string, qty int) error
+	GetCartByUserID(ctx context.Context, userID string) (models.Cart, error)
+}
+
+type cartRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewCartRepository(db *pgxpool.Pool) *CartRepository {
-	return &CartRepository{
+func NewCartRepository(db *pgxpool.Pool) CartRepository {
+	return &cartRepository{
 		db: db,
 	}
 }
 
 // AddItemToCart
 
-func (r *CartRepository) AddItemToCart(ctx context.Context, userID, sku string, qty int) error {
+func (r *cartRepository) AddItemToCart(ctx context.Context, userID, sku string, qty int) error {
 	var cartID int64
 
 	err := r.db.QueryRow(ctx, "SELECT id FROM cart WHERE user_id = $1", userID).Scan(&cartID)
@@ -45,7 +50,7 @@ func (r *CartRepository) AddItemToCart(ctx context.Context, userID, sku string, 
 
 // GetCartByUserId
 
-func (r *CartRepository) GetCartByUserID(ctx context.Context, userID string) (models.Cart, error) {
+func (r *cartRepository) GetCartByUserID(ctx context.Context, userID string) (models.Cart, error) {
 	var cartID int64
 	cart := models.Cart{
 		UserId: userID,
