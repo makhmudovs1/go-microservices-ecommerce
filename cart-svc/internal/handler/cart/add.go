@@ -25,17 +25,9 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request", http.StatusBadRequest)
 		return
 	}
-	if req.Quantity <= 0 {
-		http.Error(w, "quantity must be > 0", http.StatusBadRequest)
-		return
-	}
-	if req.SKU == "" {
-		http.Error(w, "sku is required", http.StatusBadRequest)
-		return
-	}
 	cart, err := h.svc.AddItem(r.Context(), req.UserID, req.SKU, req.Quantity)
 	if err != nil {
-		http.Error(w, "service error", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
