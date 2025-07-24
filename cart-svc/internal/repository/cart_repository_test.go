@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func setupTestDB(ctx context.Context, t *testing.T) *CartRepository {
+func setupTestDB(ctx context.Context, t *testing.T) CartRepository {
 	_, err := pool.Exec(ctx, "TRUNCATE cart_item, cart RESTART IDENTITY CASCADE")
 	if err != nil {
 		t.Fatalf("failed to truncate tables: %v", err)
