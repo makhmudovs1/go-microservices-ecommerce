@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/handler"
 	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/handler/cart"
 	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/repository"
 	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/service"
@@ -34,13 +33,14 @@ func New(postgresDSN string) (*Server, error) {
 
 	// 5) Set up routes
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", handler.Health)
 	mux.HandleFunc("/cart", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
 			h.AddToCart(w, r)
 		case http.MethodGet:
 			h.GetCart(w, r)
+		case http.MethodDelete:
+			h.RemoveFromCart(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

@@ -10,6 +10,7 @@ import (
 type CartRepository interface {
 	AddItemToCart(ctx context.Context, userID, sku string, qty int) error
 	GetCartByUserID(ctx context.Context, userID string) (models.Cart, error)
+	RemoveItemFromCart(ctx context.Context, userID, sku string) error
 }
 
 type cartRepository struct {
@@ -75,4 +76,13 @@ func (r *cartRepository) GetCartByUserID(ctx context.Context, userID string) (mo
 		return models.Cart{}, err
 	}
 	return cart, err
+}
+
+func (r *cartRepository) RemoveItemFromCart(ctx context.Context, userID, sku string) error {
+	var cartID int64
+	if err := r.db.QueryRow(ctx, "SELECT id FROM cart WHERE user_id = $1", userID).Scan(&cartID); err != nil {
+		return err
+	}
+	_, err := r.db.Exec(ctx, "DELETE FROM cart_item WHERE cart_id = $1 AND sku=$2", cartID, sku)
+	return err
 }

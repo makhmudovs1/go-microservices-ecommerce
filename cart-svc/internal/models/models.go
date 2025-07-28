@@ -7,6 +7,12 @@ type AddItemRequest struct {
 	Quantity int    `json:"quantity"` // number of pieces (>0)
 }
 
+// RemoveItemRequest - DELETE /cart
+type RemoveItemRequest struct {
+	UserID string `json:"user_id"`
+	SKU    string `json:"sku"`
+}
+
 // CartResponse — ответ GET /cart
 type CartItem struct {
 	SKU string `json:"sku"`

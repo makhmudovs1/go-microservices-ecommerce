@@ -10,6 +10,7 @@ import (
 type CartService interface {
 	AddItem(ctx context.Context, userID string, sku string, qty int) (models.Cart, error)
 	GetCartByUserID(ctx context.Context, userID string) (models.Cart, error)
+	RemoveItem(ctx context.Context, userID, sku string) (models.Cart, error)
 }
 
 type cartService struct {
@@ -40,5 +41,18 @@ func (s *cartService) AddItem(ctx context.Context, userID string, sku string, qt
 }
 
 func (s *cartService) GetCartByUserID(ctx context.Context, userID string) (models.Cart, error) {
+	return s.repo.GetCartByUserID(ctx, userID)
+}
+
+func (s *cartService) RemoveItem(ctx context.Context, userID, sku string) (models.Cart, error) {
+	if userID == "" {
+		return models.Cart{}, fmt.Errorf("userID is required")
+	}
+	if sku == "" {
+		return models.Cart{}, fmt.Errorf("sku is required")
+	}
+	if err := s.repo.RemoveItemFromCart(ctx, userID, sku); err != nil {
+		return models.Cart{}, err
+	}
 	return s.repo.GetCartByUserID(ctx, userID)
 }
