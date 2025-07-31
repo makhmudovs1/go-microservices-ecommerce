@@ -26,6 +26,10 @@ func (m *mockCartRepository) GetCartByUserID(ctx context.Context, userID string)
 	return m.getCartResult, m.getCartErr
 }
 
+func (m *mockCartRepository) RemoveItemFromCart(ctx context.Context, userID, sku string) error {
+	return m.getCartErr
+}
+
 func TestCartService_AddItem(t *testing.T) {
 	testCases := []struct {
 		name       string
