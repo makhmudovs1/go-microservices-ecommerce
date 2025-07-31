@@ -2,27 +2,21 @@ package server
 
 import (
 	"context"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/handler"
 	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/handler/cart"
 	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/repository"
 	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/service"
 	"net/http"
-	"os"
 )
 
 type Server struct {
 	httpServer *http.Server
 }
 
-func New(postgresDSN string) (*Server, error) {
+func New(pool *pgxpool.Pool) (*Server, error) {
 	// 1) connecting to DB
-	ctx := context.Background()
-	os.Setenv("POSTGRES_DSN", postgresDSN)
-	if err := repository.InitPostgres(ctx); err != nil {
-		return nil, err
-	}
-	dbPool := repository.GetPool()
-
+	dbPool := pool
 	// 2) repository
 	repo := repository.NewCartRepository(dbPool)
 
@@ -59,6 +53,6 @@ func (s *Server) Run() error {
 	return s.httpServer.ListenAndServe()
 }
 
-func (s *Server) Stop() error {
-	return s.httpServer.Close()
+func (s *Server) Stop(ctx context.Context) error {
+	return s.httpServer.Shutdown(ctx)
 }
