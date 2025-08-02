@@ -19,6 +19,7 @@ func main() {
 	}
 	defer logger.Sync()
 	dsn := os.Getenv("POSTGRES_DSN")
+	logger.Info("Using DSN", zap.String("dsn", dsn))
 	pool, err := pgxpool.New(context.Background(), dsn)
 	if err != nil {
 		panic(err)
