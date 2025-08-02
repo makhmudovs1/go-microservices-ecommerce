@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/models"
 	"github.com/makhmudovs1/go-microservices-ecommerce/cart-svc/internal/repository"
+	"go.uber.org/zap"
 )
 
 type CartService interface {
@@ -13,12 +14,14 @@ type CartService interface {
 }
 
 type cartService struct {
-	repo repository.CartRepository
+	repo   repository.CartRepository
+	logger *zap.Logger
 }
 
-func NewCartService(repo repository.CartRepository) CartService {
+func NewCartService(repo repository.CartRepository, logger *zap.Logger) CartService {
 	return &cartService{
-		repo: repo,
+		repo:   repo,
+		logger: logger,
 	}
 }
 
