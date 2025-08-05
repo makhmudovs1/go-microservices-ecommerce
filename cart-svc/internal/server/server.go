@@ -34,6 +34,8 @@ func New(pool *pgxpool.Pool, logger *zap.Logger) (*Server, error) {
 			h.AddToCart(w, r)
 		case http.MethodGet:
 			h.GetCart(w, r)
+		case http.MethodDelete:
+			h.RemoveFromCart(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
